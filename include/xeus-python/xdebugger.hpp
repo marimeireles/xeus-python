@@ -31,7 +31,7 @@ namespace xpyt
     public:
 
         debugger(zmq::context_t& context,
-                 const xeus::xconfiguration& config,
+                 const xeus::xconfiguration& kernel_config,
                  const std::string& user_name,
                  const std::string& session_id);
 
@@ -73,7 +73,8 @@ namespace xpyt
     std::unique_ptr<xeus::xdebugger> make_python_debugger(zmq::context_t& context,
                                                           const xeus::xconfiguration& config,
                                                           const std::string& user_name,
-                                                          const std::string& session_id);
+                                                          const std::string& session_id,
+                                                          const nl::json& debugger_config);
 }
 
 #endif

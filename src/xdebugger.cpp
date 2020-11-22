@@ -40,18 +40,18 @@ using namespace std::placeholders;
 namespace xpyt
 {
     debugger::debugger(zmq::context_t& context,
-                       const xeus::xconfiguration& config,
+                       const xeus::xconfiguration& kernel_config,
                        const std::string& user_name,
                        const std::string& session_id)
-        : p_ptvsd_client(new xptvsd_client(context, config, xeus::get_socket_linger(), user_name, session_id,
+        : p_ptvsd_client(new xptvsd_client(context, kernel_config, xeus::get_socket_linger(), user_name, session_id,
                                            std::bind(&debugger::handle_event, this, _1)))
         , m_ptvsd_socket(context, zmq::socket_type::req)
         , m_ptvsd_header(context, zmq::socket_type::req)
         , m_ptvsd_port("")
         , m_is_started(false)
     {
-        m_ptvsd_socket.setsockopt(ZMQ_LINGER, xeus::get_socket_linger());
-        m_ptvsd_header.setsockopt(ZMQ_LINGER, xeus::get_socket_linger());
+        m_ptvsd_socket.set(zmq::sockopt::linger, xeus::get_socket_linger());
+        m_ptvsd_header.set(zmq::sockopt::linger, xeus::get_socket_linger());
         m_ptvsd_port = xeus::find_free_port(100, 5678, 5900);
     }
 
@@ -441,11 +441,12 @@ namespace xpyt
     }
 
     std::unique_ptr<xeus::xdebugger> make_python_debugger(zmq::context_t& context,
-                                                          const xeus::xconfiguration& config,
+                                                          const xeus::xconfiguration& kernel_config,
                                                           const std::string& user_name,
-                                                          const std::string& session_id)
+                                                          const std::string& session_id,
+                                                          const nl::json& debugger_config)
     {
-        return std::unique_ptr<xeus::xdebugger>(new debugger(context, config, user_name, session_id));
+        return std::unique_ptr<xeus::xdebugger>(new debugger(context, kernel_config, user_name, session_id));
     }
 }
 
